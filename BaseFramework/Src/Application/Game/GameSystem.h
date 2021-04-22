@@ -15,5 +15,9 @@ private:
 	void Release();		//解放
 
 	KdModelWork m_sky;	//スカイスフィア
+
+	KdModelWork m_cube;	//キューブ
+
+	KdCamera m_camera;	//カメラ
 };
 
