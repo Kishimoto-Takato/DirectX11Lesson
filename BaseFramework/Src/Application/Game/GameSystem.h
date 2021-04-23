@@ -1,6 +1,7 @@
 ﻿#pragma once
 
 class StageMap;
+class Player;
 
 class GameSystem
 {
@@ -27,5 +28,6 @@ private:
 	DirectX::SimpleMath::Matrix m_skyMat;	//スカイスフィアの行列
 
 	StageMap* m_pStage = nullptr;
+	Player* m_pPlayer = nullptr;
 };
 

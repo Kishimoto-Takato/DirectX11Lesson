@@ -26,6 +26,9 @@ void KdShaderManager::Init()
 
 	// ライト
 	m_cb8_Light.Create();
+
+	m_cb8_Light.Work().DL_Dir.Normalize();
+
 	m_cb8_Light.Write();
 	D3D.WorkDevContext()->VSSetConstantBuffers(8, 1, m_cb8_Light.GetAddress());
 	D3D.WorkDevContext()->PSSetConstantBuffers(8, 1, m_cb8_Light.GetAddress());

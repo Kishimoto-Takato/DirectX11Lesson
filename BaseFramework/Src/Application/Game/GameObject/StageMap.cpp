@@ -11,10 +11,10 @@ StageMap::~StageMap()
 void StageMap::Draw()
 {
 	//エフェクト用のシェーダー
-	SHADER->m_effectShader.SetToDevice();
+	SHADER->m_standardShader.SetToDevice();
 
 	//スカイのモデルを描画
-	SHADER->m_effectShader.DrawModel(m_modelWork, m_World);
+	SHADER->m_standardShader.DrawModel(m_modelWork, m_World);
 
 	
 }

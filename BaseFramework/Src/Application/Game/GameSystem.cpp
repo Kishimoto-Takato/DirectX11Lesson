@@ -1,5 +1,6 @@
 ﻿#include "GameSystem.h"
 #include "GameObject/StageMap.h"
+#include "GameObject/Player.h"
 
 void GameSystem::Init()
 {
@@ -22,7 +23,12 @@ void GameSystem::Init()
 	DirectX::SimpleMath::Matrix initPos;
 
 	//カメラ初期座標
-	initPos = initPos.CreateTranslation({ 0.0f, 0.0f, -3.0f });
+	initPos = initPos.CreateTranslation({ 0.0f, 1.0f, -3.0f });
+
+	DirectX::SimpleMath::Matrix initRot;
+	initRot = initRot.CreateRotationX(DirectX::XMConvertToRadians(30.0f));
+
+	initPos = initRot * initPos;
 
 	//カメラ初期座標セット
 	m_camera.SetCameraMatrix(initPos);
@@ -33,8 +39,11 @@ void GameSystem::Init()
 	//スカイスフィア拡縮行列
 	m_skyMat = m_skyMat.CreateScale(2200.0f);
 
+	//インスタンス化
 	m_pStage = new StageMap();
+	m_pPlayer = new Player();
 
+	//init呼び出し
 	m_pStage->Init();
 }
 
@@ -59,12 +68,17 @@ void GameSystem::Update()
 
 	//キューブ行列の合成
 	m_cubeMat = rotation * m_cubeMat * rotation;
+
+	
 }
 
 void GameSystem::Draw()
 {
+
+	m_pPlayer->WorkGetCamera().SetToShader();
+
 	//カメラの行列をセット
-	m_camera.SetToShader();
+	//m_camera.SetToShader();
 
 	//エフェクト用のシェーダー
 	SHADER->m_effectShader.SetToDevice();
@@ -72,8 +86,13 @@ void GameSystem::Draw()
 	//スカイのモデルを描画
 	SHADER->m_effectShader.DrawModel(m_sky, m_skyMat);
 
+	//エフェクト用のシェーダー
+	SHADER->m_standardShader.SetToDevice();
+
 	//キューブのモデルを描画
-	SHADER->m_effectShader.DrawModel(m_cube, m_cubeMat);
+	SHADER->m_standardShader.DrawModel(m_cube, m_cubeMat);
+
+	
 
 	if (m_pStage)
 	{
@@ -83,9 +102,19 @@ void GameSystem::Draw()
 
 void GameSystem::Release()
 {
+	//やってることは同じ
 	if (m_pStage)
 	{
 		delete(m_pStage);
 		m_pStage = nullptr;
+	}
+
+	//同じ
+	//KdSafeRelease(m_pPlayer);
+
+	if (m_pPlayer)
+	{
+		delete(m_pPlayer);
+		m_pPlayer = nullptr;
 	}
 }
