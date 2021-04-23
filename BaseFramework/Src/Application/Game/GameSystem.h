@@ -1,5 +1,7 @@
 ﻿#pragma once
 
+class StageMap;
+
 class GameSystem
 {
 public:
@@ -19,5 +21,11 @@ private:
 	KdModelWork m_cube;	//キューブ
 
 	KdCamera m_camera;	//カメラ
+
+	DirectX::SimpleMath::Matrix m_cubeMat;	//キューブのワールド行列
+
+	DirectX::SimpleMath::Matrix m_skyMat;	//スカイスフィアの行列
+
+	StageMap* m_pStage = nullptr;
 };
 

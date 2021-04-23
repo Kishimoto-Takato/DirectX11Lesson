@@ -1,4 +1,5 @@
 ﻿#include "GameSystem.h"
+#include "GameObject/StageMap.h"
 
 void GameSystem::Init()
 {
@@ -8,18 +9,56 @@ void GameSystem::Init()
 		assert(0 && "SkyModel読み込み失敗\n");	//読み込み失敗の表示
 	}
 
-	if (!m_cube.Load("Data/Models/Cube/Cube.gltf"))
+	//キューブモデルの読み込みが失敗したらエラー表示
+	if (!m_cube.Load("Data/Models/Cube/Cube2.gltf"))
 	{
 		assert(0 && "CubeModel読み込み失敗\n");	//読み込み失敗の表示
 	}
 
 	//カメラ視野角の設定
-	m_camera.SetProjectionMatrix(60.0f);	//右側60度、左側60度計120度のカメラ
+	m_camera.SetProjectionMatrix(60.0f,3000.0f);	//右側60度、左側60度計120度のカメラ
+
+	//カメラ行列
+	DirectX::SimpleMath::Matrix initPos;
+
+	//カメラ初期座標
+	initPos = initPos.CreateTranslation({ 0.0f, 0.0f, -3.0f });
+
+	//カメラ初期座標セット
+	m_camera.SetCameraMatrix(initPos);
+
+	//キューブ初期座標
+	m_cubeMat = m_cubeMat.CreateTranslation({ 0.0f, 0.0f, 0.75f });
+
+	//スカイスフィア拡縮行列
+	m_skyMat = m_skyMat.CreateScale(2200.0f);
+
+	m_pStage = new StageMap();
+
+	m_pStage->Init();
 }
 
 void GameSystem::Update()
 {
-	
+	//回転行列
+	DirectX::SimpleMath::Matrix rotation;
+	rotation = rotation.CreateRotationY(DirectX::XMConvertToRadians(2.0f));
+
+	//回転行列
+	DirectX::SimpleMath::Matrix rotationSky;
+	rotationSky = rotationSky.CreateRotationY(DirectX::XMConvertToRadians(2.0f * 0.05f ));
+
+	//カメラ行列の取得
+	//DirectX::SimpleMath::Matrix& camaraMat = m_camera.WorkCamera();
+
+	//カメラ行列の合成
+	//camaraMat = camaraMat * rotation;
+
+	//スカイ行列の合成
+	m_skyMat = rotationSky * m_skyMat;
+
+	//キューブ行列の合成
+	m_cubeMat = rotation * m_cubeMat * rotation;
 }
 
 void GameSystem::Draw()
@@ -31,13 +70,22 @@ void GameSystem::Draw()
 	SHADER->m_effectShader.SetToDevice();
 
 	//スカイのモデルを描画
-	SHADER->m_effectShader.DrawModel(m_sky);
+	SHADER->m_effectShader.DrawModel(m_sky, m_skyMat);
 
 	//キューブのモデルを描画
-	SHADER->m_effectShader.DrawModel(m_cube);
+	SHADER->m_effectShader.DrawModel(m_cube, m_cubeMat);
+
+	if (m_pStage)
+	{
+		m_pStage->Draw();
+	}
 }
 
 void GameSystem::Release()
 {
-	OutputDebugStringA("Release\n");
+	if (m_pStage)
+	{
+		delete(m_pStage);
+		m_pStage = nullptr;
+	}
 }
