@@ -21,7 +21,9 @@ private:
 	// モデルワーク
 	KdModelWork		m_modelWork;
 	// 行列が必要
-	DirectX::SimpleMath::Matrix m_mWorld;
+	DirectX::SimpleMath::Matrix m_mWorld;		//ゲーム内のワールド(絶対)行列
 
 	KdCamera m_camera;	//カメラ
+	Math::Matrix m_mLocalCamera;		// キャラクターのworld行列からの目の位置までの相対行列
+	Math::Matrix m_RotateCamera;		// カメラのその場回転行列
 };

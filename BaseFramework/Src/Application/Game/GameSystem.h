@@ -21,7 +21,7 @@ private:
 
 	KdModelWork m_cube;	//キューブ
 
-	KdCamera m_camera;	//カメラ
+	//KdCamera m_camera;	//カメラ
 
 	DirectX::SimpleMath::Matrix m_cubeMat;	//キューブのワールド行列
 

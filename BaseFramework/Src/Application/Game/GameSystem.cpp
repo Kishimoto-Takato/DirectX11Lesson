@@ -16,35 +16,38 @@ void GameSystem::Init()
 		assert(0 && "CubeModel読み込み失敗\n");	//読み込み失敗の表示
 	}
 
-	//カメラ視野角の設定
-	m_camera.SetProjectionMatrix(60.0f,3000.0f);	//右側60度、左側60度計120度のカメラ
+	////カメラ視野角の設定
+	//m_camera.SetProjectionMatrix(60.0f,3000.0f);	//右側60度、左側60度計120度のカメラ
 
-	//カメラ行列
-	DirectX::SimpleMath::Matrix initPos;
+	////カメラ行列
+	//DirectX::SimpleMath::Matrix initPos;
 
-	//カメラ初期座標
-	initPos = initPos.CreateTranslation({ 0.0f, 1.0f, -3.0f });
+	////カメラ初期座標
+	//initPos = initPos.CreateTranslation({ 0.0f, 1.0f, -3.0f });
 
-	DirectX::SimpleMath::Matrix initRot;
-	initRot = initRot.CreateRotationX(DirectX::XMConvertToRadians(30.0f));
+	//DirectX::SimpleMath::Matrix initRot;
+	//initRot = initRot.CreateRotationX(DirectX::XMConvertToRadians(30.0f));
 
-	initPos = initRot * initPos;
+	//initPos = initRot * initPos;
 
-	//カメラ初期座標セット
-	m_camera.SetCameraMatrix(initPos);
+	////カメラ初期座標セット
+	//m_camera.SetCameraMatrix(initPos);
 
 	//キューブ初期座標
-	m_cubeMat = m_cubeMat.CreateTranslation({ 0.0f, 0.0f, 0.75f });
+	m_cubeMat = m_cubeMat.CreateTranslation({ 1.0f, 0.0f, 0.0f });
 
 	//スカイスフィア拡縮行列
-	m_skyMat = m_skyMat.CreateScale(2200.0f);
+	m_skyMat = m_skyMat.CreateScale(30.0f);
 
 	//インスタンス化
 	m_pStage = new StageMap();
-	m_pPlayer = new Player();
-
 	//init呼び出し
 	m_pStage->Init();
+
+	m_pPlayer = new Player();
+
+	
+	m_pPlayer->Init();
 }
 
 void GameSystem::Update()
@@ -69,6 +72,10 @@ void GameSystem::Update()
 	//キューブ行列の合成
 	m_cubeMat = rotation * m_cubeMat * rotation;
 
+	if (m_pPlayer)
+	{
+		m_pPlayer->Update();
+	}
 	
 }
 
