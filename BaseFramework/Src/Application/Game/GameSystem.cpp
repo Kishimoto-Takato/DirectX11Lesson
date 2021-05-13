@@ -1,6 +1,10 @@
 ﻿#include "GameSystem.h"
+#include "../main.h"
+
 #include "GameObject/StageMap.h"
 #include "GameObject/Player.h"
+
+#include "Camera/TPSCamera.h"
 
 void GameSystem::Init()
 {
@@ -52,6 +56,16 @@ void GameSystem::Init()
 
 void GameSystem::Update()
 {
+	if (GetAsyncKeyState(VK_ESCAPE))
+	{
+		if (MessageBoxA(APP.m_window.GetWndHandle(), "ほんまにゲームやめるん？", "Message", MB_YESNO | MB_ICONQUESTION | MB_DEFBUTTON2) == IDYES)
+		{
+			APP.End();
+		}
+
+		SetCursorPos(TPSCamera::s_fixMousePos.x, TPSCamera::s_fixMousePos.y);
+	}
+
 	//回転行列
 	DirectX::SimpleMath::Matrix rotation;
 	rotation = rotation.CreateRotationY(DirectX::XMConvertToRadians(2.0f));
@@ -81,8 +95,16 @@ void GameSystem::Update()
 
 void GameSystem::Draw()
 {
+	if (m_pPlayer)
+	{
+		TPSCamera* pCamera = m_pPlayer->WorkGetCamera();
 
-	m_pPlayer->WorkGetCamera().SetToShader();
+		if (pCamera)
+		{
+			pCamera->SetToShader();
+		}
+	}
+	
 
 	//カメラの行列をセット
 	//m_camera.SetToShader();
@@ -104,6 +126,11 @@ void GameSystem::Draw()
 	if (m_pStage)
 	{
 		m_pStage->Draw();
+	}
+
+	if (m_pPlayer)
+	{
+		m_pPlayer->Draw();
 	}
 }
 

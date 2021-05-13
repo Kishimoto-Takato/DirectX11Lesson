@@ -24,12 +24,12 @@ public:
 	inline const DirectX::SimpleMath::Matrix& GetProjMatrix() const { return m_mProj; }
 
 	// カメラ行列・ビュー行列
-	void SetCameraMatrix(const DirectX::SimpleMath::Matrix& mCam);
+	virtual void SetCameraMatrix(const DirectX::SimpleMath::Matrix& mCam);
 
 	// カメラ情報(ビュー・射影行列など)をシェーダへセット
 	void SetToShader();
 
-	const DirectX::SimpleMath::Matrix& const GetCamera() { m_mCam; }
+	//const DirectX::SimpleMath::Matrix& const GetCamera() { m_mCam; }
 
 	DirectX::SimpleMath::Matrix& WorkCamera();
 

@@ -1,5 +1,7 @@
 ﻿#pragma once
 
+class TPSCamera;
+
 class Player
 {
 public:
@@ -10,8 +12,11 @@ public:
 	void Update();
 	void Init();
 
-	const KdCamera& GetCamera() const { return m_camera; }
-	KdCamera& WorkGetCamera() { return m_camera; }
+	const TPSCamera* GetCamera() const { return m_pCamera; }
+	TPSCamera* WorkGetCamera() { return m_pCamera; }
+
+	//static const POINT s_fixMousePos;
+
 private:
 
 	void Release();
@@ -20,10 +25,15 @@ private:
 	//======================================================
 	// モデルワーク
 	KdModelWork		m_modelWork;
+	KdModelWork		m_robot;	//キューブ
+
+	//KdCamera m_camera;	//カメラ
+
+	DirectX::SimpleMath::Matrix m_robotMat;	//キューブのワールド行列
 	// 行列が必要
 	DirectX::SimpleMath::Matrix m_mWorld;		//ゲーム内のワールド(絶対)行列
 
-	KdCamera m_camera;	//カメラ
-	Math::Matrix m_mLocalCamera;		// キャラクターのworld行列からの目の位置までの相対行列
-	Math::Matrix m_RotateCamera;		// カメラのその場回転行列
+	TPSCamera* m_pCamera;	//カメラ
+
+
 };
