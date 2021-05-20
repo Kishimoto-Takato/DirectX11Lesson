@@ -14,79 +14,30 @@ void Player::Draw()
 
 void Player::Update()
 {
-	//キューブ初期座標
-	m_robotMat = m_robotMat.CreateTranslation({ 0.0f, 1.0f, 0.0f });
+	Math::Vector3 vMove;
 
-	// スピード変数
-	float moveSpd = 0.05f;
-
-	Math::Vector3 moveVec;
-
-	if (GetAsyncKeyState('W')) { moveVec.z += 1.0f; }		// 前方向に移動
-	if (GetAsyncKeyState('S')) { moveVec.z -= 1.0f; }		// 後ろ方向に移動
-	if (GetAsyncKeyState('A')) { moveVec.x -= 1.0f; }		// 左方向に移動
-	if (GetAsyncKeyState('D')) { moveVec.x += 1.0f; }		// 右方向に移動
-
-	moveVec.Normalize();
-	moveVec *= moveSpd;
-
-	if (m_pCamera)
-	{
-		moveVec = moveVec.TransformNormal(moveVec, m_pCamera->GetRotationYMatrix());
-	}
-
-	m_mWorld._41 += moveVec.x;
-	m_mWorld._43 += moveVec.z;
-
-
-
-	//// マウスでカメラを回転させる処理
-	//POINT nowPos;
-	//GetCursorPos(&nowPos);
-
-	//static POINT prevPos = nowPos;
-
-	//POINT mouseMove;
-	//mouseMove.x = nowPos.x - s_fixMousePos.x;
-	//mouseMove.y = nowPos.y - s_fixMousePos.y;
-
-	//prevPos = nowPos;
-
-	//SetCursorPos(s_fixMousePos.x, s_fixMousePos.y);
-	//
-	////kamerawokaitensaserusyori
-	//m_camAngle.x += mouseMove.y * 0.15f;
-	//m_camAngle.y += mouseMove.x * 0.15f;
-
-	////回転制御
-	//m_camAngle.x = std::clamp(m_camAngle.x, -75.0f, 90.0f);
-
-	// マウスの移動量の４分の１の角度(Degree)回転
-	//Math::Matrix rotateY;
-	//m_RotateCamera = m_RotateCamera.CreateRotationY
-	//(DirectX::XMConvertToRadians(m_camAngle.y));
-
-	//Math::Matrix rotateX;
-	//m_RotateCamera *= m_RotateCamera.CreateFromAxisAngle
-	//(m_RotateCamera.Right(), DirectX::XMConvertToRadians(m_camAngle.x));
-
-	// m_mRotateCameraに毎フレームの回転を合成
-	   //m_RotateCamera *= rotateX * rotateY;
-	  // m_RotateCamera *= rotateX;
-
-	//DirectX::SimpleMath::Matrix trans;
-	//trans = trans.CreateTranslation({ 0.01f, 0.0f, 0.00f });
-
-	////カメラ行列の合成
-	//m_mWorld *= trans;
-
+	UpdateMove(vMove);
+	
+	
 	if (m_pCamera)
 	{
 		m_pCamera->Update();
 
+		//回転の更新
+		UpdateRotate(vMove);
+
+		Math::Matrix trans;
+		trans = Math::Matrix::CreateTranslation(m_worldPos);
+
+		Math::Matrix rotation;
+		rotation = Math::Matrix::CreateRotationY(DirectX::XMConvertToRadians(m_worldRot.y));
+
+		m_mWorld = rotation * trans;
+
 		// プレイヤーの絶対行列をセットする
-		m_pCamera->SetCameraMatrix(m_mWorld);
+		m_pCamera->SetCameraMatrix(trans);
 	}
+
 }
 
 void Player::Init()
@@ -132,4 +83,63 @@ void Player::Init()
 
 void Player::Release()
 {
+	KdSafeDelete(m_pCamera);
+}
+
+void Player::UpdateMove(Math::Vector3& dstMove)
+{
+	// スピード変数
+	float moveSpd = 0.05f;
+
+	Math::Vector3 moveVec;
+
+	if (GetAsyncKeyState('W')) { moveVec.z += 1.0f; }		// 前方向に移動
+	if (GetAsyncKeyState('S')) { moveVec.z -= 1.0f; }		// 後ろ方向に移動
+	if (GetAsyncKeyState('A')) { moveVec.x -= 1.0f; }		// 左方向に移動
+	if (GetAsyncKeyState('D')) { moveVec.x += 1.0f; }		// 右方向に移動
+
+	moveVec.Normalize();
+	moveVec *= moveSpd;
+
+	if (m_pCamera)
+	{
+		moveVec = moveVec.TransformNormal(moveVec, m_pCamera->GetRotationYMatrix());
+	}
+
+	m_worldPos.x += moveVec.x;
+	m_worldPos.z += moveVec.z;
+
+	dstMove = moveVec;
+}
+
+void Player::UpdateRotate(const Math::Vector3& srcMove)
+{
+	if (!m_pCamera) { return; }
+
+	if (srcMove.LengthSquared() == 0.0f) { return; }
+
+	// キャラの正面方向のベクトル：出発ベクトル
+	Math::Vector3 nowDir = m_mWorld.Backward();
+
+	// 移動方向のベクトル：目標ベクトル
+	Math::Vector3 targetDir = srcMove;
+
+	nowDir.Normalize();
+	targetDir.Normalize();
+
+	float nowAng = atan2(nowDir.x, nowDir.z);
+	nowAng = DirectX::XMConvertToDegrees(nowAng);
+
+	float targetAng = atan2(targetDir.x, targetDir.z);
+	targetAng = DirectX::XMConvertToDegrees(targetAng);
+
+	
+	float rotateAng = targetAng - nowAng;
+
+							//条件式 ? 真：偽　3項演算子
+	rotateAng = (rotateAng > 0) ? 8.0f : -8.0f;
+
+	m_worldRot.y += rotateAng;
+	//m_worldRot = m_pCamera->GetRotationAngle();
+	
 }

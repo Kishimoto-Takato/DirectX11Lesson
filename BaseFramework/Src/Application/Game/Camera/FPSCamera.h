@@ -10,10 +10,11 @@ public:
 	void Init();
 	void Update();
 
-	const Math::Matrix GetRotationMatrix();
-	const Math::Matrix GetRotationYMatrix()
+	const Math::Matrix GetRotationMatrix() const;
+	const Math::Matrix GetRotationYMatrix() const
 	{ return Math::Matrix::CreateRotationY(DirectX::XMConvertToRadians(m_degAng.y)); }
 
+	const Math::Vector3& GetRotationAngle() const { return m_degAng; }
 
 	virtual void SetCameraMatrix(const DirectX::SimpleMath::Matrix& mWorld) override;
 	void SetLocalPos(const Math::Vector3& pos) { m_localPos = pos; }

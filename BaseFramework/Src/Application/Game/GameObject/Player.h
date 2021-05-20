@@ -10,7 +10,7 @@ public:
 
 	void Draw();
 	void Update();
-	void Init();
+	void Init();		//初期化：カメラの初期化・モデルの読み込み
 
 	const TPSCamera* GetCamera() const { return m_pCamera; }
 	TPSCamera* WorkGetCamera() { return m_pCamera; }
@@ -20,6 +20,10 @@ public:
 private:
 
 	void Release();
+
+	void UpdateMove(Math::Vector3& dstMove);
+	void UpdateRotate(const Math::Vector3& srcMove);
+
 	//======================================================
 	// 基本は２つセットで用いる
 	//======================================================
@@ -28,6 +32,9 @@ private:
 	KdModelWork		m_robot;	//キューブ
 
 	//KdCamera m_camera;	//カメラ
+
+	Math::Vector3 m_worldPos;			// world行列を作るための座標
+	Math::Vector3 m_worldRot;			//　world行列を瑠来るためのそれぞれの軸の回転
 
 	DirectX::SimpleMath::Matrix m_robotMat;	//キューブのワールド行列
 	// 行列が必要

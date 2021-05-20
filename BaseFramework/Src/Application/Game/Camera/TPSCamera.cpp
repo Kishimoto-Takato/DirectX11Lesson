@@ -15,5 +15,5 @@ void TPSCamera::SetCameraMatrix(const Math::Matrix& mWorld)
     rotation = GetRotationMatrix();
 
 
-    KdCamera::SetCameraMatrix(localGazePos * localPos * rotation * mWorld);
+    KdCamera::SetCameraMatrix( localPos * rotation * localGazePos * mWorld);
 }

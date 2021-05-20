@@ -28,7 +28,7 @@ void FPSCamera::Update()
     m_degAng.x = std::clamp(m_degAng.x, m_minAngleX, m_maxAngleX);
 }
 
-const Math::Matrix FPSCamera::GetRotationMatrix()
+const Math::Matrix FPSCamera::GetRotationMatrix() const
 {
     return Math::Matrix::CreateFromYawPitchRoll(
         DirectX::XMConvertToRadians(m_degAng.y), 
